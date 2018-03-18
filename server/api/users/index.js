@@ -10,16 +10,6 @@ module.exports = router;
 // Check if user_id in params matches authenticated user id
 router.use(`/:user_id/*`, isVerifiedUser);
 
-router.route(`/:user_id`)
-  .get((req, res) => {
-    return new User({ id: req.user.id })
-    .fetch()
-    .then(user => {
-      return res.json(user);
-    })
-    .catch(err => res.json({ message: err.message }));
-  });
-
 // Add an address to a user and get all addresses related to that user
 router.route(`/:user_id/addresses`)
   .post((req, res) => {

@@ -59,7 +59,11 @@ router.post(`/register`, (req, res) => {
       })
         .save()
         .then(user => {
-          return res.json(user);
+          user = user.toJSON();
+          return res.json({ 
+            user,
+            token: jwt.sign({ id: user.id }, secret) 
+          });
         })
         .catch(err => res.status(400).json({ message: err.message }));
     });
@@ -67,7 +71,10 @@ router.post(`/register`, (req, res) => {
 });
 
 router.post(`/login`, passport.authenticate(`local`, { session: false }), (req, res) => {
-  return res.json({ token: jwt.sign(req.user, secret) });
+  return res.json({ 
+    user: req.user,
+    token: jwt.sign({ id: req.user.id }, secret) 
+  });
 });
 
 router.post(`/logout`, (req, res) => {
@@ -78,6 +85,16 @@ router.post(`/logout`, (req, res) => {
 
 // Routes below must be authenticated to be accessed
 router.use(ejwt({ secret }));
+
+router.route(`/user`)
+.get((req, res) => {
+  return new User({ id: req.user.id })
+  .fetch()
+  .then(user => {
+    return res.json(user);
+  })
+  .catch(err => res.json({ message: err.message }));
+});
 
 // users and spaces routes
 router.use(`/users/`, usersRoute);
