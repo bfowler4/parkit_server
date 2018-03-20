@@ -10,5 +10,8 @@ module.exports = {
   },
   stripe: {
     secretKey: `sk_test_GHvIug6egQFp76QF8hlaXPR5`
+  },
+  google: {
+    key: `AIzaSyAJO4jHVgHZmkXW5FcgFJVEH5n2UvWOHKM`
   }
 }

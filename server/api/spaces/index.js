@@ -5,6 +5,7 @@ const SpaceInReview = require(`../../db/models/SpaceInReview`);
 const Reservation = require(`../../db/models/Reservation`);
 const SpaceOccupied = require(`../../db/models/SpaceOccupied`);
 const axios = require(`axios`);
+const googleKey = require(`../../../config/index`).google.key;
 module.exports = router;
 
 const REVIEW_INTERVAL = `interval '60 second'`;
@@ -59,6 +60,7 @@ router.route(`/request`)
 
     return axios.get(buildGoogleDistanceURL(latitude, longitude, spaces))
     .then(results => {
+      console.log(results);
       const distances = results.data.rows[0].elements;
       const minimumDistanceIndex = getMinimumDistanceIndex(distances);
       return spaces[minimumDistanceIndex];
@@ -69,7 +71,10 @@ router.route(`/request`)
     return new SpaceInReview({ space_id: space.id })
     .save();
   })
-  .catch(err => res.status(400).json({ message: err.message }));
+  .catch(err => {
+    console.log(err.message);
+    res.status(400).json({ message: err.message })
+  });
 });
 
 router.route(`/reserve`)
@@ -119,7 +124,7 @@ router.route(`/reserve`)
 });
 
 function buildGoogleDistanceURL(destinationLatitude, destinationLongitude, spaces) {
-  let baseURL = `http://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&mode=walking&origins=${destinationLatitude},${destinationLongitude}&destinations=`;
+  let baseURL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&mode=walking&origins=${destinationLatitude},${destinationLongitude}&destinations=`;
   
   spaces.forEach((space, index) => {
     baseURL += space.latitude + `,` + space.longitude;
@@ -127,6 +132,7 @@ function buildGoogleDistanceURL(destinationLatitude, destinationLongitude, space
       baseURL += `|`;
     }
   });
+  baseURL += `&key=${googleKey}`;
   return baseURL;
 }
 
