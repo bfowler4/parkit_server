@@ -12,6 +12,6 @@ module.exports = {
     secretKey: `sk_test_GHvIug6egQFp76QF8hlaXPR5`
   },
   google: {
-    key: `AIzaSyAJO4jHVgHZmkXW5FcgFJVEH5n2UvWOHKM`
+    key: `AIzaSyDTnUGz9mp6JQu-r9fKms5dHKJT3L0JrG0`
   }
 }

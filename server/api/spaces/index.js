@@ -44,7 +44,7 @@ router.route(`/request`)
         `spaces.id`
       );
       qb.whereRaw(`spaces_in_review.id is null and spaces_occupied.id is null and st_distance(location, st_makepoint(${longitude},${latitude})) < 10000`);
-      qb.limit(25);
+      qb.limit(1);
     })
     .fetchAll();
   })
@@ -57,14 +57,7 @@ router.route(`/request`)
       err.status = 200;
       throw err;
     }
-
-    return axios.get(buildGoogleDistanceURL(latitude, longitude, spaces))
-    .then(results => {
-      console.log(results);
-      const distances = results.data.rows[0].elements;
-      const minimumDistanceIndex = getMinimumDistanceIndex(distances);
-      return spaces[minimumDistanceIndex];
-    });
+    return spaces[0];
   })
   .then(space => {
     res.json(space);
