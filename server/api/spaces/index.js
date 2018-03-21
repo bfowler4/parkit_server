@@ -82,9 +82,9 @@ router.route(`/reserve`)
     time_requested
   } = req.body;
   const duration = (end_time - start_time) / 60;
-  start_time = new Date(start_time * 1000).toISOString();
-  end_time = new Date(end_time * 1000).toISOString();
-  time_requested = new Date(time_requested * 1000).toISOString();
+  start_time = new Date(start_time).toISOString();
+  end_time = new Date(end_time).toISOString();
+  time_requested = new Date(time_requested).toISOString();
 
   return new Reservation({
     user_id,
