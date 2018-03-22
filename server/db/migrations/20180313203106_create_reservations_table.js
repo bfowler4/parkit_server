@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
     table.timestamp(`start_time`);
     table.timestamp(`end_time`);
     table.integer(`duration`);
+    table.decimal(`price`);
     table.integer(`user_id`).references(`id`).inTable(`users`);
     table.integer(`space_id`).references(`id`).inTable(`spaces`);
     table.timestamp(`created_at`).defaultTo(knex.fn.now());

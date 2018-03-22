@@ -72,16 +72,15 @@ router.route(`/request`)
 
 router.route(`/reserve`)
 .post((req, res) => {
-  const {
-    user_id,
-    space_id
-  } = req.body;
+  const { space_id } = req.body;
+  const user_id = req.user.id;
   let {
     start_time,
     end_time,
     time_requested
   } = req.body;
-  const duration = (end_time - start_time) / 60;
+  const duration = Math.ceil((end_time - start_time) / 60 / 1000);
+  const price = Math.ceil(duration * 0.033333333 * 100) / 100;
   start_time = new Date(start_time).toISOString();
   end_time = new Date(end_time).toISOString();
   time_requested = new Date(time_requested).toISOString();
@@ -92,15 +91,18 @@ router.route(`/reserve`)
     time_requested,
     start_time,
     end_time,
-    duration
+    duration,
+    price
   })
   .save()
   .then(reservation => {
-    return reservation.toJSON();
+    reservation = reservation.toJSON();
+    return new Reservation({ id: reservation.id })
+    .fetch({ withRelated: [`space`, `space.address`] });
   })
   .then(reservation => {
+    reservation = reservation.toJSON();
     res.json(reservation);
-
     const { space_id, end_time } = reservation;
     return new SpaceOccupied({ space_id, end_time })
     .save();
@@ -113,7 +115,9 @@ router.route(`/reserve`)
     .where(`space_id`, space.space_id)
     .destroy();
   })
-  .catch(err => res.status(400).json({ message: err.message }));
+  .catch(err => {
+    res.status(400).json({ message: err.message })
+  });
 });
 
 function buildGoogleDistanceURL(destinationLatitude, destinationLongitude, spaces) {
